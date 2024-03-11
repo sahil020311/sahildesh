@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Stopwatch with Laps</title>
+  <style>
+    body {
+      background-color: #f0f0f0;
+    }
+    #container {
+      text-align: center;
+      margin-top: 50px;
+      background-color: #ffffff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+      width: 400px;
+      margin: 0 auto;
+    }
+    #stopwatch {
+      font-size: 48px; /* Adjust font size here */
+    }
+    #lapList {
+      list-style-type: none;
+      padding: 0;
+      text-align: center;
+      margin-top: 20px;
+    }
+    button {
+      font-size: 16px; /* Adjust button font size */
+      padding: 10px 20px; /* Adjust button padding */
+      margin: 5px;
+    }
+  </style>
+</head>
+<body>
+  <div id="container">
+    <div id="stopwatch">00:00:00</div>
+    <button onclick="startStop()">Start/Stop</button>
+    <button onclick="recordLap()">Lap</button>
+    <button onclick="reset()">Reset</button>
+    <ul id="lapList"></ul>
+  </div>
+
+  <script>
+    let timerInterval;
+    let running = false;
+    let startTime;
+    let laps = [];
+    
+    function startStop() {
+      if (!running) {
+        startTimer();
+        document.querySelector('button:nth-of-type(1)').textContent = 'Stop';
+      } else {
+        stopTimer();
+        document.querySelector('button:nth-of-type(1)').textContent = 'Start';
+      }
+    }
+    
+    function startTimer() {
+      running = true;
+      startTime = Date.now();
+      timerInterval = setInterval(updateTimer, 10);
+    }
+    
+    function stopTimer() {
+      running = false;
+      clearInterval(timerInterval);
+    }
+    
+    function updateTimer() {
+      let elapsedTime = Date.now() - startTime;
+      let minutes = Math.floor(elapsedTime / (1000 * 60));
+      let seconds = Math.floor((elapsedTime % (1000 * 60)) / 1000);
+      let milliseconds = Math.floor((elapsedTime % 1000) / 10);
+    
+      document.getElementById('stopwatch').textContent = padNumber(minutes) + ':' + padNumber(seconds) + ':' + padNumber(milliseconds);
+    }
+    
+    function padNumber(number) {
+      if (number < 10) {
+        return '0' + number;
+      }
+      return number;
+    }
+    
+    function recordLap() {
+      if (running) {
+        let lapTime = document.getElementById('stopwatch').textContent;
+        laps.push(lapTime);
+        updateLapList();
+      }
+    }
+    
+    function updateLapList() {
+      let lapList = document.getElementById('lapList');
+      lapList.innerHTML = '';
+      laps.forEach((lap, index) => {
+        let lapItem = document.createElement('li');
+        lapItem.textContent = `Lap ${index + 1}: ${lap}`;
+        lapList.appendChild(lapItem);
+      });
+    }
+    
+    function reset() {
+      stopTimer();
+      document.getElementById('stopwatch').textContent = '00:00:00';
+      document.querySelector('button:nth-of-type(1)').textContent = 'Start';
+      laps = [];
+      updateLapList();
+    }
+  </script>
+</body>
+</html>
